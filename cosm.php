@@ -5,14 +5,14 @@ define(COSM_API_KEY, "aBUpZ_sy_SeTdiYGic-7m4fkGMOSAKxjd00xR1BFc3lkST0g");
 define(COSM_BASE_URL, "http://api.cosm.com/v2/feeds/");
 
 function parseReport($inreport) {
-	($feedid,$outreport) = preg_split(/\r\n/, $inreport, -1, PREG_SPLIT_NO_EMPTY);
-	return ($feedid,$outreport);
+	list($feedid,$outreport) = preg_split("/\r\n/", $inreport);
+	return array($feedid,$outreport);
 }
 
 function genCosmJSON($params) {
 	$encodedCosm = '{"version":"1.0.0","datastreams":[';
 	foreach ( $params as $stream ) {
-		($streamid,$curval) = preg_split(/,/, $stream);
+		list($streamid,$curval) = preg_split("/,/", $stream);
       		$encodedCosm .= '{"id":"'.$streamid.'", "current_value":"'.$curval.'"},';
 	}
   	$encodedCosm .=']}';
@@ -59,7 +59,7 @@ try {
 	$report = ask("", array("choices" => "[ANY]"));
        _log("*** Got: ".$report->value."***");
 
-	($feedid,$params) = parseReport($report->value);
+	list($feedid,$params) = parseReport($report->value);
 	$encoded=genCosmJSON($params);
 	sendToCosm($feedid,$encoded);
 }
